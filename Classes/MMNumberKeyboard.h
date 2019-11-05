@@ -52,6 +52,12 @@ FOUNDATION_EXPORT const unsigned char MMNumberKeyboardVersionString[];
  */
 - (BOOL)numberKeyboardShouldDeleteBackward:(MMNumberKeyboard *)numberKeyboard;
 
+/**
+ * Called when text changes
+ * for RxSwift textField response
+ */
+- (void)numberKeyboardTextChanged;
+
 @end
 
 /**
@@ -139,6 +145,10 @@ typedef NS_ENUM(NSUInteger, MMNumberKeyboardButtonStyle) {
  *  @param handler A handler block.
  */
 - (void)configureSpecialKeyWithImage:(UIImage *)image actionHandler:(nullable dispatch_block_t)handler;
+
+- (void)configureSpecialKeyWithTitle:(NSString *)title
+                               style:(MMNumberKeyboardButtonStyle)style
+                       actionHandler:(nullable dispatch_block_t)handler;
 
 /**
  *  Configures the special key with an image and a target-action.

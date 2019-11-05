@@ -428,6 +428,38 @@ static const CGFloat MMNumberKeyboardPadSpacing = 8.0f;
     [button setImage:image forState:UIControlStateNormal];
 }
 
+- (void)configureSpecialKeyWithTitle:(NSString *)title
+                               style:(MMNumberKeyboardButtonStyle)style
+                       actionHandler:(nullable dispatch_block_t)handler {
+    __weak typeof(self)weakSelf = self;
+    if (title) {
+        self.specialKeyHandler = ^(void) {
+            NSString *string = title;
+            __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+            if ([strongSelf.delegate respondsToSelector:@selector(numberKeyboard:shouldInsertText:)]) {
+                BOOL shouldInsert = [strongSelf.delegate numberKeyboard:strongSelf shouldInsertText:string];
+                if (!shouldInsert) {
+                    return;
+                }
+            }
+            
+            [strongSelf.keyInput insertText:string];
+            if ([strongSelf.delegate respondsToSelector:@selector(numberKeyboardTextChanged)]) {
+                [strongSelf.delegate numberKeyboardTextChanged];
+            }
+            handler();
+        };
+    } else {
+        self.specialKeyHandler = NULL;
+    }
+    
+    
+    MMKeyboardButton *button = (MMKeyboardButton *)self.buttonDictionary[@(MMNumberKeyboardButtonSpecial)];
+    [button setImage:nil forState:UIControlStateNormal];
+    [button setTitle:title forState:UIControlStateNormal];
+    button.style = style;
+}
+
 - (void)configureSpecialKeyWithImage:(UIImage *)image target:(id)target action:(SEL)action
 {
     __weak typeof(self)weakTarget = target;
